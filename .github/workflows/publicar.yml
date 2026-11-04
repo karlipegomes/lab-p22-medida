@@ -17,19 +17,14 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: contexto (medida)
-        run: |
-          echo "MEDIDA event=$GITHUB_EVENT_NAME ref=$GITHUB_REF ref_name=$GITHUB_REF_NAME ref_type=$GITHUB_REF_TYPE sha=$GITHUB_SHA head=${{ github.event.pull_request.head.sha }}"
-          echo "MEDIDA head_commit=$(git rev-parse HEAD)"
-
-      - name: Nome e versão
+      - name: Nome, tag e versão da imagem
         id: img
         run: |
           echo "nome=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
           if [[ "$GITHUB_REF_TYPE" == tag ]]; then
-            echo "versao=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+            echo "tag=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
           else
-            echo "versao=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+            echo "tag=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
           fi
 
       - uses: docker/setup-buildx-action@v3
@@ -46,8 +41,8 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name == 'push' }}
-          tags: ${{ steps.img.outputs.nome }}:${{ steps.img.outputs.versao }}
+          tags: ${{ steps.img.outputs.nome }}:${{ steps.img.outputs.tag }}
           build-args: |
-            VERSAO=${{ steps.img.outputs.versao }}
+            VERSAO=${{ steps.img.outputs.tag }}
           labels: |
             org.opencontainers.image.revision=${{ github.sha }}
