@@ -101,4 +101,3 @@ func (e erroConfig) Error() string { return e.msg }
 func errConfig(codigo int, formato string, a ...any) error {
 	return erroConfig{codigo: codigo, msg: fmt.Sprintf(formato, a...)}
 }
-func quebrado( {
