@@ -37,7 +37,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: docker/build-push-action@v6
-        if: github.event_name == 'push'
         with:
           context: .
           platforms: linux/amd64,linux/arm64
